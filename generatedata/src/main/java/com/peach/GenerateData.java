@@ -1,9 +1,8 @@
 package com.peach;
 
-import com.sun.tools.javac.jvm.Gen;
+import com.peach.utils.SchemaUtil;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumWriter;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.List;
 
 /**
  *
@@ -60,6 +58,11 @@ public class GenerateData {
 
     }
 
+    /**
+     * 加载数据
+     * @param dataFileWriter
+     * @param schema
+     */
     private static void loadData(DataFileWriter<GenericRecord> dataFileWriter, Schema schema) {
         File file = new File(sourcePath);
         if(file == null) {
@@ -75,9 +78,12 @@ public class GenerateData {
             String line;
             GenericRecord genericRecord;
             while((line = bufferedReader.readLine()) != null) {
-               genericRecord = getCustomerAddress(line, schema);
-                if(genericRecord != null) {
-                    dataFileWriter.append(genericRecord);
+                if(line != "") {
+                    String[] values = line.split("\\|");
+                    genericRecord = SchemaUtil.convertRecord(values, schema);
+                    if(genericRecord != null) {
+                        dataFileWriter.append(genericRecord);
+                    }
                 }
             }
 
@@ -97,7 +103,13 @@ public class GenerateData {
 
     }
 
-    private static GenericRecord getCustomerAddress(String line, Schema schema) {
+    /**
+     * 生成记录
+     * @param line 读取的行数据
+     * @param schema
+     * @return GenericRecord记录
+     */
+    /*private static GenericRecord getCustomerAddress(String line, Schema schema) {
         if(line == null || line == "") {
             return null;
         }
@@ -134,7 +146,7 @@ public class GenerateData {
         }
 
         return genericRecord;
-    }
+    }*/
 
 
 }
