@@ -55,6 +55,12 @@ object ScalaReadAvro {
     ))
 
     val ds = sqlContext.createDataset(ddd)
-    ds.show()
+//    ds.show()
+
+    val df = ds.toDF();
+    df.createTempView("customer_address");
+    sqlContext.sql("select count(*) from customer_address").show()
+    sqlContext.sql("select count(*) from customer_address where ca_address_sk>900000").show()
+
   }
 }
